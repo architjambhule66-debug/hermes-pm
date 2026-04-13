@@ -1,0 +1,17 @@
+#!/bin/bash
+# Pre-commit hook to run core functionality tests
+# To enable: cp .githooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+
+echo "🧪 Running Hermes core functionality tests..."
+./test_core.sh
+
+if [ $? -ne 0 ]; then
+    echo ""
+    echo "❌ Tests failed. Please fix the issues before committing."
+    echo "   Run './test_core.sh' to see detailed output."
+    exit 1
+fi
+
+echo ""
+echo "✅ All tests passed!"
+exit 0

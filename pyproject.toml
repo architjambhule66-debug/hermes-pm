@@ -1,0 +1,43 @@
+[project]
+name = "hermes-pm"
+version = "1.0.0.dev3"
+description = "Python package manager with uv-like optimizations"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+    {name = "Archit Jambhule", email = "jambhulearchit7@gmail.com"}
+]
+license = {text = "MIT"}
+keywords = ["package-manager", "pip", "uv", "installer", "dependency-resolution", "reflink"]
+classifiers = [
+    "Topic :: Software Development :: Libraries :: Python Modules"
+]
+
+dependencies = [
+    "httpx[http2]>=0.28.1",
+    "loguru>=0.7.3",
+    "numpy>=2.4.4",
+    "packaging>=26.0",
+    "pubgrub-py>=1.1.0",
+    "rich>=14.3.3",
+    "tomli>=2.4.1",
+    "tomli-w>=1.2.0",
+    "typer>=0.24.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "build>=1.4.2",
+    "twine>=6.2.0",
+]
+
+[project.scripts]
+hermes = "src.cli:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
