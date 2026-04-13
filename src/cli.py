@@ -282,8 +282,69 @@ def remove(packages: List[str] = typer.Argument(..., help="Packages to remove"),
         console.print(f"\n[bold red]✗ Remove failed:[/bold red] {e}")
         raise typer.Exit(1)
 
-# @app.command("audit")
-# def audit_pacakges():
+
+@app.command()
+def audit():
+    console.print("\n[bold blue]Security Audit[/bold blue]\n")
+
+    try:
+        if not lockfile_exists():
+            console.print("[yellow]No hermes.lock found. Run 'hermes init' and 'hermes add' first.[/yellow]")
+            return
+
+        lockfile = load_lockfile()
+        if not lockfile:
+            console.print("[yellow]No packages installed.[/yellow]")
+            return
+
+        console.print(f"Scanning {len(lockfile)} package(s) for vulnerabilities...\n")
+        results = asyncio.run(scan_all())
+
+        if not results:
+            console.print("[bold green]✓ No known vulnerabilities found![/bold green]\n")
+            return
+
+        console.print(f"[bold red]Found vulnerabilities in {len(results)} package(s):[/bold red]\n")
+
+        total_vulns = 0
+        for package, vulns in sorted(results.items()):
+            total_vulns += len(vulns)
+            console.print(f"[bold yellow]{package}[/bold yellow] - {len(vulns)} vulnerability(ies)")
+
+            table = Table(show_header=True, header_style="bold cyan", box=None)
+            table.add_column("ID", style="red", no_wrap=True)
+            table.add_column("Summary", style="white")
+            table.add_column("Severity", style="yellow", justify="center")
+
+            for vuln in vulns[:5]:
+                vuln_id = vuln.get("id", "N/A")
+                summary = vuln.get("summary", "No summary available")
+                if len(summary) > 60:
+                    summary = summary[:57] + "..."
+                severity = "UNKNOWN"
+                if "database_specific" in vuln:
+                    severity = vuln["database_specific"].get("severity", "UNKNOWN")
+                elif "severity" in vuln:
+                    sev_list = vuln.get("severity", [])
+                    if sev_list and isinstance(sev_list, list):
+                        severity = sev_list[0].get("score", "UNKNOWN")
+
+                table.add_row(vuln_id, summary, severity)
+            console.print(table)
+
+            if len(vulns) > 5:
+                console.print(f"[dim]  ... and {len(vulns) - 5} more vulnerabilities[/dim]")
+            console.print("")
+
+        console.print(f"[bold red]Total: {total_vulns} vulnerabilities across {len(results)} packages[/bold red]\n")
+        raise typer.Exit(1)
+
+    except typer.Exit:
+        raise
+    except Exception as e:
+        console.print(f"\n[bold red]✗ Audit failed:[/bold red] {e}")
+        logger.exception("Detailed error:")
+        raise typer.Exit(1)
 
 
 @cache_app.command("info")

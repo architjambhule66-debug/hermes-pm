@@ -448,6 +448,44 @@ assert_contains "$HELP_OUTPUT" "remove" "Help shows remove command"
 echo ""
 
 # ============================================================================
+# TEST 11: hermes audit
+# ============================================================================
+echo -e "${BLUE}[TEST 11]${NC} hermes audit"
+
+# Test with no packages
+mkdir -p "$TEST_DIR/test-audit-empty"
+cd "$TEST_DIR/test-audit-empty"
+$HERMES_BIN init > /dev/null 2>&1
+
+AUDIT_EMPTY=$($HERMES_BIN audit 2>&1)
+assert_contains "$AUDIT_EMPTY" "No packages installed" "Shows message for empty project"
+
+# Test with clean package (no vulnerabilities)
+mkdir -p "$TEST_DIR/test-audit-clean"
+cd "$TEST_DIR/test-audit-clean"
+$HERMES_BIN init > /dev/null 2>&1
+$HERMES_BIN add certifi > /dev/null 2>&1
+
+AUDIT_CLEAN=$($HERMES_BIN audit 2>&1)
+assert_success "Audit command executes successfully"
+assert_contains "$AUDIT_CLEAN" "Security Audit" "Shows audit header"
+
+# Check exit code for clean packages (should be 0)
+$HERMES_BIN audit > /dev/null 2>&1
+EXIT_CODE=$?
+if [ $EXIT_CODE -eq 0 ]; then
+    TOTAL_TESTS=$((TOTAL_TESTS + 1))
+    PASSED_TESTS=$((PASSED_TESTS + 1))
+    echo -e "${GREEN}✓${NC} Exit code 0 when no vulnerabilities"
+else
+    TOTAL_TESTS=$((TOTAL_TESTS + 1))
+    FAILED_TESTS=$((FAILED_TESTS + 1))
+    echo -e "${RED}✗${NC} Exit code 0 when no vulnerabilities (got: $EXIT_CODE)"
+fi
+
+echo ""
+
+# ============================================================================
 # FINAL REPORT
 # ============================================================================
 echo -e "${BLUE}╔════════════════════════════════════════════════════════════╗${NC}"

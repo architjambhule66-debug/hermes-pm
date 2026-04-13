@@ -48,6 +48,30 @@ hermes add "httpx<1.0"
 hermes sync
 ```
 
+### List Packages
+
+```bash
+# Show all installed packages
+hermes list
+```
+
+### Remove Packages
+
+```bash
+# Remove package and unused dependencies
+hermes remove requests
+
+# Remove package but keep its dependencies
+hermes remove requests --keep-deps
+```
+
+### Security Audit
+
+```bash
+# Scan all installed packages for vulnerabilities
+hermes audit
+```
+
 ### Manage Cache
 
 ```bash
@@ -68,9 +92,10 @@ hermes cache clear
 | `hermes remove <packages>` | Remove packages (includes orphaned dependencies by default) |
 | `hermes remove <pkg> --keep-deps` | Remove package but keep its dependencies |
 | `hermes sync` | Install all packages from hermes.lock |
+| `hermes audit` | Scan installed packages for security vulnerabilities (OSV) |
 | `hermes cache info` | Show cache location, size, and statistics |
 | `hermes cache clear` | Clear the global package cache |
-| `hermes --version` | Show Hermes version |
+| `hermes --version` / `-V` | Show Hermes version |
 | `hermes --help` | Show help message |
 
 Hermes is designed as an **educational project** (Not a complete dependency manager)
