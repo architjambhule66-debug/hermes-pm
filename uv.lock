@@ -276,7 +276,7 @@ wheels = [
 
 [[package]]
 name = "hermes-pm"
-version = "1.0.0.dev3"
+version = "1.0.0.dev5"
 source = { editable = "." }
 dependencies = [
     { name = "httpx", extra = ["http2"] },

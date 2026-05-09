@@ -1,0 +1,11 @@
+# Tier 2: ML Engineering Stack (All Tier 1 packages plus ML and data processing libraries)
+
+numpy==2.4.4
+pandas==3.0.2
+matplotlib==3.9.4
+requests==2.32.3
+pillow==12.2.0
+scikit-learn==1.6.1
+pyyaml==6.0.3
+scipy==1.15.2
+openai==2.32.0

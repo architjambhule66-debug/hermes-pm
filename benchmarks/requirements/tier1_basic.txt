@@ -1,0 +1,8 @@
+# Tier 1: Basic Data Science Stack (5 core packages for data analysis and visualizatio)
+
+numpy==2.4.4
+pandas==3.0.2
+matplotlib==3.9.4
+requests==2.32.3
+pillow==12.2.0
+openai==2.32.0

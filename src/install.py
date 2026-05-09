@@ -1,8 +1,10 @@
+from asyncio import as_completed
 import subprocess
 import sys
 import shutil
 import csv
 import zipfile
+import concurrent.futures
 from pathlib import Path
 from typing import Dict, Optional, Any
 from loguru import logger
@@ -63,9 +65,7 @@ def get_dist_info_dir(site_packages: Path, package_name: str) -> Optional[Path]:
     return matches[0] if matches else None
 
 
-def install_wheel(
-    wheel_path: Path, venv_path: Optional[Path] = None, use_cache: bool = True
-) -> Dict[str, Any]:
+def install_wheel(wheel_path: Path, venv_path: Optional[Path] = None, use_cache: bool = True) -> Dict[str, Any]:
     if venv_path is None:
         venv_path = find_venv()
         if venv_path is None:
@@ -96,17 +96,33 @@ def install_wheel(
     logger.info(f"Installed {wheel_path.stem} ({stats['files_installed']} files)")
     return stats
 
-
-def install_packages(
-    wheels: Dict[str, Path], venv_path: Optional[Path], use_cache: bool = True
-) -> Dict[str, Dict]:
+def install_packages(wheels: Dict[str, Path], venv_path: Optional[Path], use_cache: bool = True, max_workers: int = 4) -> Dict[str, Dict]:
     results = {}
-    for package, wheel_path in wheels.items():
-        logger.info(f"Installing {package}...")
-        stats = install_wheel(wheel_path, venv_path, use_cache)
-        results[package] = stats
-    return results
 
+    def install_single(item):
+        package, wheel_path = item
+        logger.info(f"Installing {package}")
+        try:
+            stats = install_wheel(wheel_path, venv_path, use_cache)
+            return (package, stats, None)
+        except Exception as e:
+            logger.error(f"Failed to install {package}: {e}")
+            return (package, None, str(e))
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = [executor.submit(install_single, item) for item in wheels.items()]
+        for future in concurrent.futures.as_completed(futures):
+            package, stats, error = future.result()
+            if error is None:
+                results[package] = stats
+            else:
+                results[package] = {
+                    "error": error,
+                    "files_installed": 0,
+                    "used_cache": use_cache,
+                    "used_reflink": False
+                }
+    return results
 
 def verify_install(package_name: str, venv_path: Optional[Path] = None) -> bool:
     if venv_path is None:
@@ -120,7 +136,6 @@ def verify_install(package_name: str, venv_path: Optional[Path] = None) -> bool:
     except Exception as e:
         logger.debug(f"Error verifying {package_name}: {e}")
         return False
-
 
 def unlink_package(package: str, venv_path: Optional[Path] = None) -> bool:
     if venv_path is None:
@@ -213,23 +228,3 @@ def unlink_package(package: str, venv_path: Optional[Path] = None) -> bool:
         logger.error(f"Failed to remove .dist-info directory: {e}")
         return False
 
-
-if __name__ == "__main__":
-    from pathlib import Path
-
-    venv = find_venv()
-    print(f"Venv: {venv}")
-
-    pkg = input("Enter package to unlink: ").strip()
-
-    confirm = input(f"⚠️ This will DELETE files for '{pkg}'. Continue? (y/n): ")
-    if confirm.lower() != "y":
-        print("Aborted.")
-        exit(0)
-
-    success = unlink_package(pkg, venv)
-
-    if success:
-        print(f"✅ Successfully unlinked {pkg}")
-    else:
-        print(f"❌ Failed to unlink {pkg}")

@@ -1,0 +1,15 @@
+# Tier 3: Full ML + API + Testing Stack  (Production ML service dependencies)
+
+numpy==2.4.4
+pandas==3.0.2
+matplotlib==3.9.4
+requests==2.32.3
+pillow==12.2.0
+scikit-learn==1.6.1
+pyyaml==6.0.3
+scipy==1.15.2
+pytest==9.0.3
+black==26.3.1
+certifi==2025.4.26
+setuptools==79.0.1
+openai==2.32.0
