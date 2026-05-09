@@ -8,7 +8,7 @@ IMPORTANT : Hermes is currently designed as an **educational project** (Not a co
 
 Currently hosted on TestPyPi only since i am still working on the core items, will move to PyPi when confident about the performance and stability.
 
-[![PyPI version](https://badge.fury.io/py/hermes-pm.svg)](https://test.pypi.org/project/hermes-pm/1.0.0.dev5/)
+[![PyPI version](https://badge.fury.io/py/hermes-pm.svg)](https://pypi.org/project/hermes-pm/)
 [![Python Versions](https://img.shields.io/pypi/pyversions/hermes-pm.svg)](https://pypi.org/project/hermes-pm/)
 
 ## UV-Inspired Features

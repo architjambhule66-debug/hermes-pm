@@ -1,6 +1,6 @@
 [project]
 name = "hermes-pm"
-version = "1.0.0.dev5"
+version = "0.0.1"
 description = "Python package manager with uv-like optimizations"
 readme = "README.md"
 requires-python = ">=3.11"
