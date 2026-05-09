@@ -6,7 +6,6 @@ Ever thought why uv is fast, most people attribute it to being written in Rust, 
 
 IMPORTANT : Hermes is currently designed as an **educational project** (Not a complete dependency manager, while i would definitely like to make it prod grade, there is a long way to go for that)
 
-Currently hosted on TestPyPi only since i am still working on the core items, will move to PyPi when confident about the performance and stability.
 
 [![PyPI version](https://badge.fury.io/py/hermes-pm.svg)](https://pypi.org/project/hermes-pm/)
 [![Python Versions](https://img.shields.io/pypi/pyversions/hermes-pm.svg)](https://pypi.org/project/hermes-pm/)
@@ -30,9 +29,7 @@ Currently hosted on TestPyPi only since i am still working on the core items, wi
 ### Installation
 
 ```bash
-pip install --index-url https://test.pypi.org/simple/ \
-    --extra-index-url https://pypi.org/simple/ \
-    hermes-pm
+pip install hermes-pm
 ```
 
 ### Initialize a Project
